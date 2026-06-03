@@ -1414,6 +1414,10 @@ window.onload = function() {
 ;
 
 ;
+
+;
+
+;
 /* ==ZAPPY E-COMMERCE JS START== */
 // E-commerce functionality
 (function() {
@@ -8895,20 +8899,33 @@ function initTransparentNavbarScrollEffect() {
   if (!pageHasDarkHero) {
     window.removeEventListener('scroll', onScroll);
     window.removeEventListener('resize', onScroll);
+    // Add the .scrolled class on every viewport (so the CSS solid-bg + mobile
+    // link-color rules apply), but ONLY apply the frosted glass + inline
+    // scrolled text color on DESKTOP. On mobile the open menu is a solid,
+    // full-screen panel whose background is independent of the navbar bar's
+    // frosted background — applying the desktop frosted text color (computed
+    // from the page background) stamps an inline color:!important on every menu
+    // link that, on a dark mobile panel, renders the items invisible (dark on
+    // dark). The mobile link colors are owned by the @media(max-width:768px)
+    // CSS rules instead. Mirrors the onScroll() innerWidth<=768 guard above.
     nb.classList.add('scrolled');
-    nb.style.setProperty('--frosted-text', scrolledTextColor);
-    nb.style.setProperty('background-image', 'none', 'important');
-    nb.style.backdropFilter = 'blur(12px)';
-    nb.style.webkitBackdropFilter = 'blur(12px)';
-    nb.style.boxShadow = '0 2px 16px rgba(0,0,0,0.12)';
-    setScrolledColors(nb, scrolledTextColor);
-    if (window.innerWidth > 768) nb.style.setProperty('background-color', frostedBg, 'important');
+    if (window.innerWidth > 768) {
+      nb.style.setProperty('--frosted-text', scrolledTextColor);
+      nb.style.setProperty('background-image', 'none', 'important');
+      nb.style.setProperty('background-color', frostedBg, 'important');
+      nb.style.backdropFilter = 'blur(12px)';
+      nb.style.webkitBackdropFilter = 'blur(12px)';
+      nb.style.boxShadow = '0 2px 16px rgba(0,0,0,0.12)';
+      setScrolledColors(nb, scrolledTextColor);
+    }
     if (cm) {
       cm.classList.add('scrolled');
-      cm.style.setProperty('background', frostedBg, 'important');
-      cm.style.setProperty('backdrop-filter', 'blur(12px)', 'important');
-      cm.style.setProperty('-webkit-backdrop-filter', 'blur(12px)', 'important');
-      setScrolledColors(cm, scrolledTextColor);
+      if (window.innerWidth > 768) {
+        cm.style.setProperty('background', frostedBg, 'important');
+        cm.style.setProperty('backdrop-filter', 'blur(12px)', 'important');
+        cm.style.setProperty('-webkit-backdrop-filter', 'blur(12px)', 'important');
+        setScrolledColors(cm, scrolledTextColor);
+      }
     }
   }
 }
